@@ -557,7 +557,7 @@ huawei_base_info()
 
     #Name（名称）
     at_command="AT+CGMM"
-    name=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | grep "+CGMM: " | awk -F': ' '{print $2}' | sed 's/\r//g')
+    name=$(at $at_port $at_command | sed -n '2p' | sed 's/\r//g')
     #Manufacturer（制造商）
     at_command="AT+CGMI"
     manufacturer=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | sed -n '2p' | sed 's/\r//g')
