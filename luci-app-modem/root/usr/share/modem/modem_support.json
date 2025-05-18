@@ -287,7 +287,7 @@
             "huawei":{
                 "hisilicon":{
                     "vendor_id":["12d1","1782"],
-                    "product_id":["15c3"]
+                    "product_id":["15c3","4057"]
                 }
             }
         }
