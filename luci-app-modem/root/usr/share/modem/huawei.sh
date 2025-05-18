@@ -539,7 +539,7 @@ huawei_get_connect_status()
     }
 
     at_command="AT+CGPADDR=${define_connect}"
-    local ipv4=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "+CGPADDR: " | awk -F'"' '{print $2}')
+    local ipv4=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "+CGPADDR: " | awk -F',' '{print $2}')
     local not_ip="0.0.0.0"
 
     #设置连接状态
@@ -553,20 +553,20 @@ huawei_get_connect_status()
     echo "${connect_status}"
 }
 
-#基本信息
+#基本信息//已改MH5000-82
 huawei_base_info()
 {
     debug "Huawei base info"
 
     #Name（名称）
     at_command="AT+CGMM"
-    name=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | grep "+CGMM: " | awk -F': ' '{print $2}' | sed 's/\r//g')
+    name=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | head -n 1 | tr -d '\r')
     #Manufacturer（制造商）
     at_command="AT+CGMI"
-    manufacturer=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | sed -n '2p' | sed 's/\r//g')
+    manufacturer=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | head -n 1 | tr -d '\r')
     #Revision（固件版本）
     at_command="AT+CGMR"
-    revision=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | sed -n '2p' | sed 's/\r//g')
+    revision=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | head -n 1 | tr -d '\r')
 
     #Mode（拨号模式）
     mode=$(huawei_get_mode ${at_port} ${platform} | tr 'a-z' 'A-Z')
@@ -604,7 +604,7 @@ huawei_get_sim_status()
     echo "${sim_status}"
 }
 
-#SIM卡信息
+#SIM卡信息//已改mh5000-82
 huawei_sim_info()
 {
     debug "Huawei sim info"
@@ -622,7 +622,7 @@ huawei_sim_info()
 
     #IMEI（国际移动设备识别码）
     at_command="AT+CGSN"
-	imei=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | sed -n '2p' | sed 's/\r//g')
+	imei=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | head -n 1 | tr -d '\r')
 
     #SIM Status（SIM状态）
     at_command="AT+CPIN?"
@@ -635,7 +635,7 @@ huawei_sim_info()
 
     #ISP（互联网服务提供商）
     at_command="AT+COPS?"
-    isp=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "+COPS" | awk -F'"' '{print $2}')
+    isp=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "+COPS:" | awk -F'"' '{print $2}')
     # if [ "$isp" = "CHN-CMCC" ] || [ "$isp" = "CMCC" ]|| [ "$isp" = "46000" ]; then
     #     isp="中国移动"
     # elif [ "$isp" = "CHN-UNICOM" ] || [ "$isp" = "UNICOM" ] || [ "$isp" = "46001" ]; then
@@ -648,12 +648,12 @@ huawei_sim_info()
     at_command="AT+CNUM"
 	sim_number=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "+CNUM: " | awk -F'"' '{print $2}')
     [ -z "$sim_number" ] && {
-        sim_number=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "+CNUM: " | awk -F'"' '{print $4}')
+        sim_number=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "+CNUM: " | awk -F'"' '{print $1}')
     }
 	
     #IMSI（国际移动用户识别码）
     at_command="AT+CIMI"
-	imsi=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | sed -n '2p' | sed 's/\r//g')
+	imsi=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | head -n 1 | tr -d '\r')
 
     #ICCID（集成电路卡识别码）
     at_command="AT+ICCID"
@@ -686,7 +686,7 @@ huawei_get_rssi()
     echo "$rssi"
 }
 
-#网络信息
+#网络信息//已改MH5000-82
 huawei_network_info()
 {
     debug "Huawei network info"
